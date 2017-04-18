@@ -29,11 +29,11 @@ def data_processing(file_name):
              'puntret.tds', 'puntret.lng', 'puntret.lngtd', 'fgm', 'fga',
              'fgyds', 'totpts.fg', 'xpmade','xpmissed','xpa','xpb','xppts.tot',
              'totalfumbs', 'fumbyds','fumbslost']
-    #Game Characteristic Indicators (home/away, opponent, team)
+    # Game Characteristic Indicators (home/away, opponent, team)
     df, game_features = get_game_char_indicators(df)
-    #Player Statistic Features (Season, last 4 weeks, previous week)
+    # Player Statistic Features (Season, last 4 weeks, previous week)
     df, player_features = get_player_averages(df, stats)
-    #Combine features and return complete df and feature names
+    # Combine features and return complete df and feature names
     features = game_features + player_features
     df = df.fillna(0)
     return df, features
@@ -93,6 +93,7 @@ except:
     pickle.dump(test, open('test_df.p', 'wb'))
     pickle.dump(features2, open('test_features.p', 'wb'))
 
+# Read csv files
 train, features = data_processing('aggregated_2015.csv')
 pickle.dump(train, open('train_df.p', 'wb'))
 pickle.dump(features, open('train_features.p', 'wb'))
@@ -103,7 +104,6 @@ pickle.dump(features2, open('test_features.p', 'wb'))
 if (features != features2):
     print "Debug error about feature inconsistency"
     exit()
-response = 'FD points'
 
 # Dataframe initialization
 positions = sorted(train['Pos'].unique())
@@ -118,7 +118,7 @@ rmse_names = [x + '_' + y for y in rmse_types for x in estimators]
 df_rmse = pd.DataFrame([[0.0 for i in range(len(positions))] for j in range(len(rmse_names))], 
     index = rmse_names, columns = positions)
 
-# Iterate through all positions
+# Machine Learning: iterate through all positions
 for position in positions:
     print ('Learning for Position %s ...' % position)
     df_pos_train = train.ix[train['Pos'] == position,]
@@ -180,7 +180,6 @@ for position in positions:
         pickle.dump(grid_search, open(estimators[i] + "_" + position, 'wb'))
 
 df_rmse.to_csv('rmse.csv', header = True, index=True)
-
 
 """
 MSE of FD_2016_Projections.csv (Fantasydata.com)
