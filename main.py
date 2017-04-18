@@ -114,8 +114,8 @@ estimators = ["Ridge",
               # "SVM"
               ]
 rmse_types = ['train', 'cv', 'test']
-rmse_names = [x + '_' + y for y in rmse_types for x in estimators]
-df_rmse = pd.DataFrame([[0.0 for i in range(len(positions))] for j in range(len(rmse_names))], 
+rmse_names = [x + '_' + y for y in rmse_types for x in estimators] # e.g. Ridge_train
+df_rmse = pd.DataFrame([[0.0] * len(positions) for j in range(len(rmse_names))], 
     index = rmse_names, columns = positions)
 
 # Machine Learning: iterate through all positions
@@ -127,7 +127,7 @@ for position in positions:
     for i in range(len(estimators)):
         est = estimators[i]
 
-        if(est == "GradientBoostingRegressor"): #Gradient Boosting Regressor with Grid Search for hyperparameters
+        if(est == "GradientBoostingRegressor"):
             n_estimators = [50]
             learning_rate = [0.1]
             param_grid = {'n_estimators': n_estimators, 'learning_rate': learning_rate}
