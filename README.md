@@ -84,8 +84,31 @@ Results
 
 K-folds (k = 5) cross validation was performed using random samples of 30% of the data as the test data.  This was performed for models for all 5 player positions.  Different methods produced the best results for different positions.  Figure 1 shows the average RMSEs for each model during the train, cross validation phases for wide receivers.  Information about the testing phase is discussed in the next section.
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+Figure 1: RMSE Comparison among Different ML Models
 
+![alt text](https://github.com/zefeng-zhang/Predicting-Fantasy-Football-Points-Using-Machine-Learning/blob/master/images/rmse_model.png)
+
+* Comparisons to 2016 FantasyData.com Predictions
+
+In order to test the models, the trained models described in the previous section were tested against actual FanDuel points for weeks 5 through 12 in the 2016 football season.  The resulting RMSEs were compared to the RMSEs obtained by using FantasyData.com predictions for the same weeks.  It is seen in Figure 2 that the RMSEs are on the same order of magnitude as the FantasyData.com predictions.  It should be noted that analysts are employed by various websites to produce fantasy football predictions who likely have more time and resource to develop robust prediction models.  The fact that the RMSEs are very close is a good sign.  Ultimately, with the addition of some of the variables described in the Feature Selection section of this report, it is the opinion of the authors that the RMSE would likely outperform the FantasyData.com projections.
+
+Please note that the results shown in **Figure 2** are for for the top performing models for each position, which generally were some form of ridge regression.  Ridge regression in some sense acts as a shrinkage method as it attempts to reduce the coefficients of unnecessary variables. 
+
+Figure 2: Test RMSE (Comparison to FantasyData.com Predictions, 2016 Weeks 5-12)
+
+![alt text](https://github.com/zefeng-zhang/Predicting-Fantasy-Football-Points-Using-Machine-Learning/blob/master/images/rmse_position.png)
+
+Conclusion and future work
+--------------------------
+
+Machine learning models predicting fantasy football points were successfully implemented using ridge regression, bayesian ridge regression, elastic net, random forest and boosting.  The models performed reasonably well when compared to FantasyData.com projections for the 2016 season.  In addition lineup optimizations were performed for the 2016 season.
+
+If the project were to be continued several additional steps could be taken to potentially improve model performance:
+
+* Add additional variables into the model such as injuries, defensive stats and/or previous year fantasy performance.
+* Add additional fantasy projections into the model
+* Try additional modelling techniques and parameter optimizations
+* Algorithmically perform feature selection (possibly could drop some of the features used)
 
 
 
