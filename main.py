@@ -1,3 +1,9 @@
+"""
+This program reads two csv files, aggregated_2015.csv and aggregated_2016.csv,
+creates game characterstic features and player statistic features, 
+build machine learning models to predict player points.
+"""
+
 import pandas as pd
 from sklearn.linear_model import Ridge, BayesianRidge, ElasticNet, RidgeCV, ElasticNetCV
 from sklearn.model_selection import cross_val_score, ShuffleSplit
@@ -80,8 +86,9 @@ Main Program
 """
 
 # Read csv files
-train, features = data_processing('aggregated_2015.csv')
-test, features2 = data_processing('aggregated_2016.csv')
+path = "data/"
+train, features = data_processing(path + 'aggregated_2015.csv')
+test, features2 = data_processing(path + 'aggregated_2016.csv')
 if (features != features2):
     print "Debug error about feature inconsistency"
     exit()

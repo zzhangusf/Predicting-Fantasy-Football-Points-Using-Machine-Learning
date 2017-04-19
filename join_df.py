@@ -5,8 +5,8 @@ import pandas as pd
 Load data from multiple sources
 The data include Statistics, Fanduel Points, and Fantasy Projections
 """
-
-df_abbr = pd.read_csv("all_nfl_team_abbr.csv")
+path = "data/"
+df_abbr = pd.read_csv(path + "all_nfl_team_abbr.csv")
 fanduel_2015 = df_abbr['fanduel_2015']
 fanduel_2016 = df_abbr['fanduel_2016']
 statistics_2015 = df_abbr['statistics_2015']
@@ -93,13 +93,13 @@ Aggregate datasets for both 2015 and 2016 Seasons
 years = ['2016', '2015']
 for year in years:
 
-    df1 = pd.read_csv(year + "_Fanduel_Results",delimiter=';')
+    df1 = pd.read_csv(path + year + "_Fanduel_Results",delimiter=';')
     df1 = df1.rename(columns = {'Week':'weeks','Name':'name', 'Year':'Season'})
 
-    df2 = pd.read_csv("players_box_scores_" + year + ".csv")
+    df2 = pd.read_csv(path + "players_box_scores_" + year + ".csv")
     df2.ix[df2['Team']=='JAX','Team'] = 'JAC'
 
-    df3 = pd.read_csv("FD_" + year + "_Projections.csv")
+    df3 = pd.read_csv(path + "FD_" + year + "_Projections.csv")
     df3 = df3.rename(columns = {'week':'weeks','player':'name', 'team':'Team'})
     df3.ix[df3['Team']=='JAX','Team'] = 'JAC'
 

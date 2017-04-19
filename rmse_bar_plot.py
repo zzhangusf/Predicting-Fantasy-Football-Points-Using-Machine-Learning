@@ -12,8 +12,9 @@ Read prediction RMSEs and FantasayData's RMSEs
 Find min RMSE for each position
 """
 
-pred = pd.read_csv("rmse.csv")
-fantasy = pd.read_csv("FantasyData_rmse.csv")
+path = "data/"
+pred = pd.read_csv(path + "rmse.csv")
+fantasy = pd.read_csv(path + "FantasyData_rmse.csv")
 
 print ("The best estimator for each position with the lowest RMSE is: \n")
 
