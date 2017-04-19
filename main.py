@@ -17,8 +17,11 @@ Featuer Engineering
 """
 
 def data_processing(file_name):
+    """
+    Read the csv files and create game characterstic features and player statistic features
+    """
     df = pd.read_csv(file_name)
-    df.sort_values(by = ['playerID', 'weeks']) # for calculating rolling average
+    df.sort_values(by = ['playerID', 'weeks']) # for rolling average
     # All box score player stats, except defensive statistics
     stats = ['pass.att', 'pass.comp', 'passyds', 'pass.tds', 'pass.ints',
              'pass.twopta', 'pass.twoptm', 'rush.att', 'rushyds', 'rushtds',
@@ -29,18 +32,18 @@ def data_processing(file_name):
              'puntret.tds', 'puntret.lng', 'puntret.lngtd', 'fgm', 'fga',
              'fgyds', 'totpts.fg', 'xpmade','xpmissed','xpa','xpb','xppts.tot',
              'totalfumbs', 'fumbyds','fumbslost']
-    # Game Characteristic Indicators (home/away, opponent, team)
+    # Game Characteristic Indicators, e.g. home/away, opponent, team
     df, game_features = get_game_char_indicators(df)
-    # Player Statistic Features (Season, last 4 weeks, previous week)
+    # Player Statistic Features, e.g. Season, last 4 weeks, previous week
     df, player_features = get_player_averages(df, stats)
-    # Combine features and return complete df and feature names
     features = game_features + player_features
     df = df.fillna(0)
     return df, features
 
 def get_game_char_indicators(df):
     """
-    Adds game indicator variables returns column names
+    Transform str cols into game categorical variables
+    Returns transformed and columns
     """
     df['home'] = 1 * df['h/a'] == 'h'
     oppts = pd.get_dummies(df['Oppt'], prefix='Oppt')
@@ -54,7 +57,6 @@ def get_game_char_indicators(df):
     teams.index = range(len(df['Team']))
     teams.columns = list(team_list)
     df = pd.concat([df, oppts, teams], axis=1)
-    #return list of feature column names
     return df, ['home'] + list(oppts.columns) + list(team_list)
 
 def rolling_average(df, window):
@@ -62,7 +64,7 @@ def rolling_average(df, window):
 
 def get_player_averages(df, stats):
     """
-    Adds player averages for all stats and FanDuel point histories,
+    Estimate player averages for all stats and FanDuel point histories,
     for season-to-date, last 4 weeeks, and previous week
     """
     feature_names = []
@@ -77,35 +79,16 @@ def get_player_averages(df, stats):
 Main Program
 """
 
-try:
-    train = pd.read_pickle('train_df.p')
-    features = pickle.load(open('train_features.p', 'rb'))
-except:
-    train, features = data_processing('aggregated_2015.csv')
-    pickle.dump(train, open('train_df.p', 'wb'))
-    pickle.dump(features, open('train_features.p', 'wb'))
-
-try:
-    test = pd.read_pickle('test_df.p')
-    features2 = pickle.load(open('test_features.p', 'rb'))
-except:
-    test, features2 = data_processing('aggregated_2016.csv')
-    pickle.dump(test, open('test_df.p', 'wb'))
-    pickle.dump(features2, open('test_features.p', 'wb'))
-
 # Read csv files
 train, features = data_processing('aggregated_2015.csv')
-pickle.dump(train, open('train_df.p', 'wb'))
-pickle.dump(features, open('train_features.p', 'wb'))
 test, features2 = data_processing('aggregated_2016.csv')
-pickle.dump(test, open('test_df.p', 'wb'))
-pickle.dump(features2, open('test_features.p', 'wb'))
-
 if (features != features2):
     print "Debug error about feature inconsistency"
     exit()
 
-# Dataframe initialization
+""" RMSE dataframe initialization """
+
+# Dataframe cols, e.g. PK
 positions = sorted(train['Pos'].unique())
 estimators = ["Ridge",
               "ElasticNet",
@@ -113,13 +96,17 @@ estimators = ["Ridge",
               # "GradientBoostingRegressor"
               # "SVM"
               ]
-rmse_types = ['train', 'cv', 'test']
-rmse_names = [x + '_' + y for y in rmse_types for x in estimators] # e.g. Ridge_train
+types = ['train', 'cv', 'test']
+# Dataframe index, e.g. Ridge_train
+rmse_names = [x + '_' + y for y in types for x in estimators]
+# Initialize a matrix filled with 0s
 df_rmse = pd.DataFrame([[0.0] * len(positions) for j in range(len(rmse_names))], 
     index = rmse_names, columns = positions)
 
-# Machine Learning: iterate through all positions
+""" Machine Learning """
+
 for position in positions:
+    # Iterate through all positions
     print ('Learning for Position %s ...' % position)
     df_pos_train = train.ix[train['Pos'] == position,]
     df_pos_test = test.ix[test['Pos'] == position,]
@@ -167,17 +154,19 @@ for position in positions:
             print "Cannot find the algorithm"
             exit()
 
-        # Fit testing results using the fitted model above
-        train_rmse = np.sqrt(np.mean( (df_pos_train['FD points'] - grid_search.predict(df_pos_train[features]))**2.0 ))
-        test_rmse = np.sqrt(np.mean((df_pos_test['FD points'] - grid_search.predict(df_pos_test[features]))**2.0 ))
+        train_rmse = np.sqrt(np.mean( (df_pos_train['FD points'] - \
+                    grid_search.predict(df_pos_train[features]))**2.0 ))
+        test_rmse = np.sqrt(np.mean( (df_pos_test['FD points'] - \
+                    grid_search.predict(df_pos_test[features]))**2.0 ))
         # Deprecating "mean_squared_error". Use "neg_mean_squared_error" instead.
         cv_rmse = np.sqrt(np.abs( cross_val_score(grid_search, train[features], train['FD points'],\
             cv = 5, scoring = 'neg_mean_squared_error').mean() ))
-        # Import values into dataframe
-        for score_type in rmse_types:
-            df_rmse.loc[estimators[i] + "_" + score_type, position] = eval(score_type + '_rmse')
 
-        pickle.dump(grid_search, open(estimators[i] + "_" + position, 'wb'))
+        # Given the variable name in a string, get the variable value and import into dataframe
+        for val in types:
+            df_rmse.loc[estimators[i] + "_" + val, position] = eval(val + '_rmse')
+
+""" save rmse into csv """
 
 df_rmse.to_csv('rmse.csv', header = True, index=True)
 
