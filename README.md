@@ -7,6 +7,8 @@ Introduction
 
 FanDuel Inc. is a daily fantasy company that allows for legal gambling on multiple sports on a daily basis.  For NFL games, FanDuel allows you to select a lineup given several constraints.  Typically, you will have a set salary cap and from that salary cap you can spend money on players to set a fantasy lineup.  The most common lineup format is as shown in **Table 1** below.
 
+Table 1: Common Lineup Format for FanDuel Site
+
 | POSITION      | NUMBER OF PLAYERS   |
 | ------------- |:-------------:| 
 | Quarterback   | 1      | 
@@ -47,3 +49,45 @@ Binary indicator variables were created for several additional features.  For a 
 Several other variables were considered for the model, but not included due to lack of availability or impracticality of using the data.  Injury information on the opposing team and/or a given player’s team would provide valuable information in a given week.  If the star quarterback of a given player’s team is not playing, it is likely that the wide receivers on that team would have reduced fantasy points.  Conversely, if a star defensive player is missing on the opposing team, it is likely that an offensive player will have increased points for the week.  Additional variables considered were specific opposing team defensive statistics and prior year fantasy points / statistics.
 
 One additional approach considered was to include various fantasy website fantasy projections as features in the model.  Websites such as espn.com, fantasydata.com, yahoo.com, nfl.com, etc. all produce weekly projections for each player likely based on methodologies similar to those shown in this report.  It was the author’s opinion that the most interesting immediate task would be to compare the RMSE of the models developed herein to other websites’ projections. However, since the end goal is to produce the best FanDuel lineup, using other projections as features would be an interesting approach.  This will be discussed further in the Future Work / Conclusion section of this report.
+
+Models
+------
+
+Five separate machine learning algorithms were used to predict player fantasy points: ridge regression, bayesian ridge regression, elastic net regularization, random forest and gradient boosting.  For each algorithm, separate models were developed for each player position: quarterback, running back, wide receiver, tight end and place kicker.  The data were grouped randomly into training sets (70% of data) and test sets (30% of the data) in order to predict the RMSE (root mean squared error) for each model at each position.  Ultimately, the models were used to predict the RMSE for the top 50 fantasy players at each position (per http://fantasydata.com) in both 2015 and 2016 (weeks 5 through 12).  The comparisons to the 2015 data result in either a training RMSE or cross validation RMSE.  For testing, we compare to week 5 through 12 data in 2016.  The thinking is that the models will work best with more “rolling average” data, hence from a predictor’s standpoint (read: a bettor’s standpoint), predicting from weeks 5 forward provide the best chance to correctly predict fantasy points.  The RMSEs obtained were compared to the FanDuel predictions made by http://fantasydata.com.
+
+All models were implemented in Python using the scikit-learn package.  During the training/cross validation phase, parameters were tuned in an attempt to find the lowest RMSE.
+
+* Ridge Regression
+
+Ridge regression is similar to linear regression however it contains a penalty term which increases as the feature coefficients increase. An alpha of 1 was used.
+
+* Bayesian Ridge Regression
+
+Bayesian ridge regression is similar to ridge regression however it includes information about the features to determine the penalty weight.  The models used the scikit-learn default fitting parameters and used the “Compute Score = True” option which re-computes the objective function at each step of the model.
+
+* Elastic Net Regularization
+
+Elastic net regularization applies a weighted average of the ridge regression and lasso regression penalties.  Alpha = 1.0 and a mixing parameter of 0.5 were used for the model.
+
+* Random Forest
+
+Random forest is a tree-based machine learning algorithm which splits on randomly generated selection features in an attempt to prevent over-fitting.  The number of estimators used was 10 with a minimum sample split of 2.
+
+* Gradient Boosting
+
+Gradient Boosting is also a tree-based method which learns from previous performance mistakes.  A grid search was performed to optimize the parameters within the model.  The optimal model parameters were a learning rate of 0.3 and number of estimators = 50.
+
+Results
+-------
+
+* Cross validation
+
+K-folds (k = 5) cross validation was performed using random samples of 30% of the data as the test data.  This was performed for models for all 5 player positions.  Different methods produced the best results for different positions.  Figure 1 shows the average RMSEs for each model during the train, cross validation phases for wide receivers.  Information about the testing phase is discussed in the next section.
+
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
+
+
+
+
+
