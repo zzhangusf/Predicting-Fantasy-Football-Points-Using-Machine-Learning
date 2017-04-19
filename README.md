@@ -88,7 +88,7 @@ Figure 1: RMSE Comparison among Different ML Models
 
 ![alt text](https://github.com/zefeng-zhang/Predicting-Fantasy-Football-Points-Using-Machine-Learning/blob/master/images/rmse_model.png)
 
-* Comparisons to 2016 FantasyData.com Predictions
+* Testing: comparisons to 2016 FantasyData.com Predictions
 
 In order to test the models, the trained models described in the previous section were tested against actual FanDuel points for weeks 5 through 12 in the 2016 football season.  The resulting RMSEs were compared to the RMSEs obtained by using FantasyData.com predictions for the same weeks.  It is seen in Figure 2 that the RMSEs are on the same order of magnitude as the FantasyData.com predictions.  It should be noted that analysts are employed by various websites to produce fantasy football predictions who likely have more time and resource to develop robust prediction models.  The fact that the RMSEs are very close is a good sign.  Ultimately, with the addition of some of the variables described in the Feature Selection section of this report, it is the opinion of the authors that the RMSE would likely outperform the FantasyData.com projections.
 
