@@ -36,15 +36,15 @@ Feature Selection
 
 Fifty different statistics for each player are included in the model.  The term “season-to-date” indicates that a rolling average for each statistic is calculated up to but not including the “current” week’s game.  Intuitively, one would expect that past good performance would dictate future good performance.  Examples of statistics are passing yards, passing touchdowns, interceptions thrown, rushing yards, receptions and fumbles lost.
 
-* Season-to-Date Features
+* **Season-to-Date Features**
 
 Fifty different statistics for each player are included in the model.  The term “season-to-date” indicates that a rolling average for each statistic is calculated up to but not including the “current” week’s game.  Intuitively, one would expect that past good performance would dictate future good performance.  Examples of statistics are passing yards, passing touchdowns, interceptions thrown, rushing yards, receptions and fumbles lost.
 
-* Game Characteristics
+* **Game Characteristics**
 
 Binary indicator variables were created for several additional features.  For a given player for a given week, dummy variables were created to indicate whether the player is playing the game at home or away.  Intuitively, one would expect a player to perform better during home games.  Dummy variables were also created for the player’s team as certain teams are more offensive-oriented.  Finally, dummy variables for the player’s opponent are included in the model.  The quality of the team that a player is playing will influence the amount of points scored.
 
-* Additional Features Considered but Not Included in Model
+* **Additional Features Considered but Not Included in Model**
 
 Several other variables were considered for the model, but not included due to lack of availability or impracticality of using the data.  Injury information on the opposing team and/or a given player’s team would provide valuable information in a given week.  If the star quarterback of a given player’s team is not playing, it is likely that the wide receivers on that team would have reduced fantasy points.  Conversely, if a star defensive player is missing on the opposing team, it is likely that an offensive player will have increased points for the week.  Additional variables considered were specific opposing team defensive statistics and prior year fantasy points / statistics.
 
@@ -57,30 +57,30 @@ Five separate machine learning algorithms were used to predict player fantasy po
 
 All models were implemented in Python using the scikit-learn package.  During the training/cross validation phase, parameters were tuned in an attempt to find the lowest RMSE.
 
-* Ridge Regression
+* **Ridge Regression**
 
 Ridge regression is similar to linear regression however it contains a penalty term which increases as the feature coefficients increase. An alpha of 1 was used.
 
-* Bayesian Ridge Regression
+* **Bayesian Ridge Regression**
 
 Bayesian ridge regression is similar to ridge regression however it includes information about the features to determine the penalty weight.  The models used the scikit-learn default fitting parameters and used the “Compute Score = True” option which re-computes the objective function at each step of the model.
 
-* Elastic Net Regularization
+* **Elastic Net Regularization**
 
 Elastic net regularization applies a weighted average of the ridge regression and lasso regression penalties.  Alpha = 1.0 and a mixing parameter of 0.5 were used for the model.
 
-* Random Forest
+* **Random Forest**
 
 Random forest is a tree-based machine learning algorithm which splits on randomly generated selection features in an attempt to prevent over-fitting.  The number of estimators used was 10 with a minimum sample split of 2.
 
-* Gradient Boosting
+* **Gradient Boosting**
 
 Gradient Boosting is also a tree-based method which learns from previous performance mistakes.  A grid search was performed to optimize the parameters within the model.  The optimal model parameters were a learning rate of 0.3 and number of estimators = 50.
 
 Results
 -------
 
-* Cross validation
+* **Cross validation**
 
 K-folds (k = 5) cross validation was performed using random samples of 30% of the data as the test data.  This was performed for models for all 5 player positions.  Different methods produced the best results for different positions.  Figure 1 shows the average RMSEs for each model during the train, cross validation phases for wide receivers.  Information about the testing phase is discussed in the next section.
 
@@ -88,7 +88,7 @@ Figure 1: RMSE Comparison among Different ML Models
 
 ![alt text](https://github.com/zefeng-zhang/Predicting-Fantasy-Football-Points-Using-Machine-Learning/blob/master/images/rmse_model.png)
 
-* Testing: comparisons to 2016 FantasyData.com Predictions
+* **Testing: comparisons to 2016 FantasyData.com Predictions**
 
 In order to test the models, the trained models described in the previous section were tested against actual FanDuel points for weeks 5 through 12 in the 2016 football season.  The resulting RMSEs were compared to the RMSEs obtained by using FantasyData.com predictions for the same weeks.  It is seen in Figure 2 that the RMSEs are on the same order of magnitude as the FantasyData.com predictions.  It should be noted that analysts are employed by various websites to produce fantasy football predictions who likely have more time and resource to develop robust prediction models.  The fact that the RMSEs are very close is a good sign.  Ultimately, with the addition of some of the variables described in the Feature Selection section of this report, it is the opinion of the authors that the RMSE would likely outperform the FantasyData.com projections.
 
